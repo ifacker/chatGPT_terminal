@@ -10,15 +10,16 @@ import (
 	"fmt"
 	gpt3 "github.com/PullRequestInc/go-gpt3"
 	"github.com/gookit/color"
-	"github.com/spf13/cobra"
 	"io"
 	"log"
 	"net/http"
 	"os"
+	"strings"
 )
 
 // 非流对话
 func unStream() {
+	color.C256(190).Printf("当前体温：%.1f", config.Temperature)
 	// 如果没有输入问题，那么直接结束
 	if config.Prompt == "" {
 		color.C256(166).Println("\n[!] 请使用 -h 获取帮助信息！")
@@ -90,6 +91,7 @@ func unStream() {
 
 func GetResponse(client gpt3.Client, ctx context.Context, quesiton string) string {
 	callback := ""
+	color.C256(45).Println("\n答：\n==================")
 	err := client.CompletionStreamWithEngine(ctx, gpt3.TextDavinci003Engine, gpt3.CompletionRequest{
 		Prompt: []string{
 			quesiton,
@@ -97,7 +99,8 @@ func GetResponse(client gpt3.Client, ctx context.Context, quesiton string) strin
 		MaxTokens:   gpt3.IntPtr(3000),
 		Temperature: gpt3.Float32Ptr(float32(config.Temperature)),
 	}, func(resp *gpt3.CompletionResponse) {
-		fmt.Print(resp.Choices[0].Text)
+		//fmt.Print()
+		color.C256(82).Print(strings.TrimSpace(resp.Choices[0].Text))
 		callback = resp.Choices[0].Text
 	})
 	if err != nil {
@@ -108,39 +111,28 @@ func GetResponse(client gpt3.Client, ctx context.Context, quesiton string) strin
 	return callback
 }
 
-// 流对话
-func stream() {
+// 新的流对话
+func newStream() {
+	color.C256(190).Printf("当前体温：%.1f", config.Temperature)
 	client := gpt3.NewClient(config.API_TOKEN)
 	ctx := context.Background()
-	rootCmd := &cobra.Command{
-		Use:   "chatgpt",
-		Short: "Chat with ChatGPT in console.",
-		Run: func(cmd *cobra.Command, args []string) {
-			scanner := bufio.NewScanner(os.Stdin)
-			quit := false
-			var tmp string
-			for !quit {
-				fmt.Print("请输入你的问题（quit 退出）: ")
-
-				if !scanner.Scan() {
-					break
-				}
-
-				question := scanner.Text()
-				tmp += question + "\n"
-				switch question {
-				case "quit":
-					quit = true
-
-				default:
-					callback := GetResponse(client, ctx, tmp)
-					tmp += callback + "\n"
-				}
-			}
-		},
+	tmp := ""
+	for {
+		inputReader := bufio.NewReader(os.Stdin)
+		color.C256(33).Println("\n问：（quit 表退出）\n------------------")
+		input, err := inputReader.ReadString('\n')
+		if err != nil {
+			fmt.Println(err)
+		}
+		tmp += input
+		switch strings.TrimSpace(input) {
+		case "quit":
+			os.Exit(0)
+		default:
+			callback := GetResponse(client, ctx, tmp)
+			tmp += callback
+		}
 	}
-
-	rootCmd.Execute()
 }
 
 // 初始化
@@ -149,6 +141,6 @@ func Init() {
 	if config.Prompt != "" {
 		unStream()
 	} else {
-		stream()
+		newStream()
 	}
 }
