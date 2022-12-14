@@ -9,12 +9,12 @@ var (
 	Prompt      string
 	Temperature float64 = 0.9
 	// 解除封印
-	Seal = false
+	Seal bool
 	// 选择是否使用一问一答连续对话
-	Stream = false
+	//Stream bool
 )
 
 var (
-	Version    = "1.0"
+	Version    = "1.1"
 	ConfigPath = ""
 )

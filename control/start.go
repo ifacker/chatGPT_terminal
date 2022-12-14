@@ -88,7 +88,8 @@ func unStream() {
 	}
 }
 
-func GetResponse(client gpt3.Client, ctx context.Context, quesiton string) {
+func GetResponse(client gpt3.Client, ctx context.Context, quesiton string) string {
+	callback := ""
 	err := client.CompletionStreamWithEngine(ctx, gpt3.TextDavinci003Engine, gpt3.CompletionRequest{
 		Prompt: []string{
 			quesiton,
@@ -97,12 +98,14 @@ func GetResponse(client gpt3.Client, ctx context.Context, quesiton string) {
 		Temperature: gpt3.Float32Ptr(float32(config.Temperature)),
 	}, func(resp *gpt3.CompletionResponse) {
 		fmt.Print(resp.Choices[0].Text)
+		callback = resp.Choices[0].Text
 	})
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(13)
 	}
 	fmt.Printf("\n")
+	return callback
 }
 
 // 流对话
@@ -115,7 +118,7 @@ func stream() {
 		Run: func(cmd *cobra.Command, args []string) {
 			scanner := bufio.NewScanner(os.Stdin)
 			quit := false
-
+			var tmp string
 			for !quit {
 				fmt.Print("请输入你的问题（quit 退出）: ")
 
@@ -124,12 +127,14 @@ func stream() {
 				}
 
 				question := scanner.Text()
+				tmp += question + "\n"
 				switch question {
 				case "quit":
 					quit = true
 
 				default:
-					GetResponse(client, ctx, question)
+					callback := GetResponse(client, ctx, tmp)
+					tmp += callback + "\n"
 				}
 			}
 		},
@@ -140,9 +145,10 @@ func stream() {
 
 // 初始化
 func Init() {
-	if config.Stream {
-		stream()
-	} else {
+
+	if config.Prompt != "" {
 		unStream()
+	} else {
+		stream()
 	}
 }
