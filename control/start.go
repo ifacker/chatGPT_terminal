@@ -65,7 +65,7 @@ func unStream() {
 	req.Header = map[string][]string{
 		"Content-Type":        {"application/json"},
 		"Authorization":       {fmt.Sprintf("Bearer %s", config.API_TOKEN)},
-		"OpenAI-Organization": {"org-hTTrKvq7kOOgzKHQAdbQ8Hf1"},
+		"OpenAI-Organization": {config.ORG_ID},
 	}
 	resp, err := client.Do(req)
 	if err != nil {

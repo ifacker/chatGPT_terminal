@@ -22,7 +22,7 @@ func LoadConfig() {
 		if err != nil {
 			log.Println(err)
 			if os.IsNotExist(err) {
-				out, err := yaml.Marshal(config.YamlConfig{ApiToken: ""})
+				out, err := yaml.Marshal(config.YamlConfig{ApiToken: "", Org: ""})
 				if err != nil {
 					log.Println(err)
 				}
@@ -47,6 +47,7 @@ func LoadConfig() {
 			os.Exit(1)
 		}
 		config.API_TOKEN = configYaml.ApiToken
+		config.ORG_ID = configYaml.Org
 	}
 
 }

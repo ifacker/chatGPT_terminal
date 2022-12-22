@@ -3,6 +3,7 @@ package config
 var (
 	API_URL   = "https://api.openai.com/v1/completions"
 	API_TOKEN string
+	ORG_ID    string
 )
 
 var (
@@ -15,6 +16,6 @@ var (
 )
 
 var (
-	Version    = "1.2"
+	Version    = "1.2.1"
 	ConfigPath = ""
 )

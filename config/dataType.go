@@ -48,4 +48,5 @@ type RespJson struct {
 // 配置文件
 type YamlConfig struct {
 	ApiToken string `yaml:"apiToken"`
+	Org      string `yaml:"orgID"`
 }
