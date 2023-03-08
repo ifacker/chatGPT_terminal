@@ -48,6 +48,7 @@ func LoadConfig() {
 		}
 		config.API_TOKEN = configYaml.ApiToken
 		config.ORG_ID = configYaml.Org
+		config.PROXY = configYaml.Proxy
 	}
 
 }

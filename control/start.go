@@ -5,7 +5,6 @@ import (
 	"bytes"
 	"chatGPT/config"
 	"context"
-	"crypto/tls"
 	"encoding/json"
 	"fmt"
 	gpt3 "github.com/PullRequestInc/go-gpt3"
@@ -15,6 +14,7 @@ import (
 	"net/http"
 	"os"
 	"strings"
+	"time"
 )
 
 // 非流对话
@@ -35,11 +35,8 @@ func unStream() {
 	var temp float64 = config.Temperature
 
 	client := &http.Client{
-		Transport: &http.Transport{
-			TLSClientConfig: &tls.Config{
-				InsecureSkipVerify: true,
-			},
-		},
+		Transport: config.Tr,
+		Timeout:   30 * time.Second,
 	}
 
 	jsonStr := config.ReqJson{
@@ -71,6 +68,10 @@ func unStream() {
 	if err != nil {
 		log.Println(err)
 	}
+	if resp == nil {
+		log.Println("未接收到返回内容，请检查代理配置信息的协议或端口是否错误。")
+		os.Exit(1)
+	}
 	result, err := io.ReadAll(resp.Body)
 	if err != nil {
 		log.Println(err)
@@ -92,6 +93,7 @@ func unStream() {
 func GetResponse(client gpt3.Client, ctx context.Context, quesiton string) string {
 	callback := ""
 	color.C256(45).Println("\n答：\n==================")
+
 	err := client.CompletionStreamWithEngine(ctx, gpt3.TextDavinci003Engine, gpt3.CompletionRequest{
 		Prompt: []string{
 			quesiton,
@@ -114,7 +116,11 @@ func GetResponse(client gpt3.Client, ctx context.Context, quesiton string) strin
 // 新的流对话
 func newStream() {
 	color.C256(190).Printf("当前体温：%.1f", config.Temperature)
-	client := gpt3.NewClient(config.API_TOKEN)
+
+	// 设置 http.client 参数，覆盖 gpt3 里的参数，从而实现代理功能
+	option := gpt3.WithHTTPClient(&http.Client{Transport: config.Tr})
+
+	client := gpt3.NewClient(config.API_TOKEN, option)
 	ctx := context.Background()
 	tmp := ""
 	for {

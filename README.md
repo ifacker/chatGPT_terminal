@@ -15,11 +15,30 @@
 
 # -f 解除机器人封印，机器人将会回答所有问题
 ./chatGPT -f -p "提出的问题"
+
+# -n 不显示 logo 使用
+./chatGPT -n -p "提出的问题"
+
+# -proxy 使用代理模式
+./chatGPT -proxy "http://localhost:1080" -p "提出的问题"
 ```
 ## 演示：
 <img src="img/gifmk3015.gif"/>
+<img src="img/1.png"/>
+<img src="img/2.png"/>
 
 ## 版本信息
+
+### v1.3 🐹
+1. 新增 -n 功能，关闭显示 logo
+2. 新增代理功能（由于一些不可抗力...），新增代理功能可由两种方式实现，分别是：
+   1. 参数形式，如：-proxy socks5://192.168.1.1:1080 或 -proxy http://192.168.1.1:8080
+   2. 配置形式，如：在 ~/chatGPT.yaml 中进行配置，格式如下（或者可以把原来的配置文件删了，然后重新生成一个，重新配置）：
+```text
+apiToken: "sk-xxxxxxx"
+orgID: "org-xxxxxxx"
+proxy: "http://localhost:7890"
+```
 
 ### v1.2.1 🐭
 #### 修复了API有时无法使用的情况，以下为操作步骤

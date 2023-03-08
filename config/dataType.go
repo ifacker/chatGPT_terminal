@@ -49,4 +49,5 @@ type RespJson struct {
 type YamlConfig struct {
 	ApiToken string `yaml:"apiToken"`
 	Org      string `yaml:"orgID"`
+	Proxy    string `yaml:"proxy"`
 }
