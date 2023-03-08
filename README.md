@@ -23,9 +23,9 @@
 ./chatGPT -proxy "http://localhost:1080" -p "提出的问题"
 ```
 ## 演示：
-<img src="img/gifmk3015.gif"/>
-<img src="img/1.png"/>
-<img src="img/2.png"/>
+<img src="img/gifmk3015.gif" width="530"/>
+<img src="img/1.png" width="530"/>
+<img src="img/2.png" width="530"/>
 
 ## 版本信息
 
